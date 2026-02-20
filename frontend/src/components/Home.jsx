@@ -30,6 +30,17 @@ export default function Home() {
     setTranscript('');
     document.querySelector('input[type="file"]').value = '';
   };
+
+  const handleDownload = () => {
+    const blob = new Blob([transcript], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const fileName = file ? file.name.replace(/\.[^/.]+$/, '') : 'transcript';
+    a.download = `${fileName}-transcript.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 grow">
       <div className="bg-white rounded-lg shadow-lg p-8 sm:p-10 max-w-3xl mx-auto">
@@ -50,7 +61,7 @@ export default function Home() {
             disabled={!file || loading}
             className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap">
             <Upload className="w-4 h-4" />
-            {loading ? 'Uploading...' : 'Transcribe'}
+            {loading ? 'Transcribing...' : 'Transcribe'}
           </button>
           {(file || transcript) && (
             <button 
@@ -74,6 +85,7 @@ export default function Home() {
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-lg font-semibold">Transcript:</h3>
             <button 
+              onClick={handleDownload}
               className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition">
               <Download className="w-4 h-4" />
               Export TXT
