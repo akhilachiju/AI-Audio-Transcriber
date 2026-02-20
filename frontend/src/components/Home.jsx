@@ -5,6 +5,7 @@ import axios from 'axios';
 export default function Home() {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [transcript, setTranscript] = useState('');
 
   const handleUpload = async () => {
     if (!file) return;
@@ -16,7 +17,7 @@ export default function Home() {
 
     try {
       const response = await axios.post('http://localhost:7071/api/transcribe', formData);
-      console.log('Success:', response.data);
+      setTranscript(response.data.transcription || 'Transcription completed');
     } catch (err) {
       console.error('Upload failed:', err);
     } finally {
@@ -58,19 +59,21 @@ export default function Home() {
         <p className="text-red-600 text-sm">Error message here</p>
       </div>
 
-      <div className="mt-6 bg-white rounded-lg shadow-lg p-6 sm:p-8 max-w-3xl mx-auto">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-lg font-semibold">Transcript:</h3>
-          <button 
-            className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition">
-            <Download className="w-4 h-4" />
-            Export TXT
-          </button>
+      {transcript && (
+        <div className="mt-6 bg-white rounded-lg shadow-lg p-6 sm:p-8 max-w-3xl mx-auto">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-lg font-semibold">Transcript:</h3>
+            <button 
+              className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition">
+              <Download className="w-4 h-4" />
+              Export TXT
+            </button>
+          </div>
+          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <p className="text-gray-800 whitespace-pre-wrap">{transcript}</p>
+          </div>
         </div>
-        <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-          <p className="text-gray-800 whitespace-pre-wrap">Transcript text here</p>
-        </div>
-      </div>
+      )}
     </main>
   );
 }
