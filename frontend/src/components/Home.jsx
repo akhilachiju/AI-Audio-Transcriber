@@ -1,6 +1,28 @@
+import { useState } from 'react';
 import { FileAudio, Upload, Download } from 'lucide-react';
+import axios from 'axios';
 
 export default function Home() {
+  const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleUpload = async () => {
+    if (!file) return;
+
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append('audio', file);
+
+    try {
+      const response = await axios.post('http://localhost:7071/api/transcribe', formData);
+      console.log('Success:', response.data);
+    } catch (err) {
+      console.error('Upload failed:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 grow">
       <div className="bg-white rounded-lg shadow-lg p-8 sm:p-10 max-w-3xl mx-auto">
@@ -13,12 +35,15 @@ export default function Home() {
           <input
             type="file"
             accept=""
+            onChange={(e) => setFile(e.target.files[0])}
             className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-black file:text-white hover:file:bg-gray-800 file:cursor-pointer"
           />
           <button 
+            onClick={handleUpload}
+            disabled={!file || loading}
             className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap">
             <Upload className="w-4 h-4" />
-            Transcribe
+            {loading ? 'Uploading...' : 'Transcribe'}
           </button>
           <button 
             className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition disabled:bg-gray-300 disabled:cursor-not-allowed whitespace-nowrap">
