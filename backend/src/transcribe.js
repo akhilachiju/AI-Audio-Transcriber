@@ -8,7 +8,10 @@ let transcriber = null;
 
 async function getTranscriber() {
   if (!transcriber) {
-    transcriber = await pipeline('automatic-speech-recognition', 'Xenova/whisper-tiny.en');
+    // transcriber = await pipeline('automatic-speech-recognition', 'Xenova/whisper-tiny.en'); // 75MB, fastest, English only
+    // transcriber = await pipeline('automatic-speech-recognition', 'Xenova/whisper-base.en'); // 150MB, fast, English only
+     transcriber = await pipeline('automatic-speech-recognition', 'Xenova/whisper-small'); // 250MB, balanced accuracy/speed, multilingual
+    // transcriber = await pipeline('automatic-speech-recognition', 'Xenova/whisper-medium'); // 1.5GB, high accuracy, slower, multilingual
   }
   return transcriber;
 }

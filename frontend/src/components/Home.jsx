@@ -24,6 +24,12 @@ export default function Home() {
       setLoading(false);
     }
   };
+
+  const handleClear = () => {
+    setFile(null);
+    setTranscript('');
+    document.querySelector('input[type="file"]').value = '';
+  };
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 grow">
       <div className="bg-white rounded-lg shadow-lg p-8 sm:p-10 max-w-3xl mx-auto">
@@ -46,10 +52,14 @@ export default function Home() {
             <Upload className="w-4 h-4" />
             {loading ? 'Uploading...' : 'Transcribe'}
           </button>
-          <button 
-            className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition disabled:bg-gray-300 disabled:cursor-not-allowed whitespace-nowrap">
-            Clear
-          </button>
+          {(file || transcript) && (
+            <button 
+              onClick={handleClear}
+              disabled={loading}
+              className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition disabled:bg-gray-300 disabled:cursor-not-allowed whitespace-nowrap">
+              Clear
+            </button>
+          )}
         </div>
 
         <p className="text-xs text-gray-500 mb-6">Supports mp3, wav, mp4, and m4a files up to 200MB</p>
