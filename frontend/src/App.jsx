@@ -1,7 +1,13 @@
+import Header from './components/Header'
+import Footer from './components/Footer'
+import Home from './components/Home'
+
 function App() {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <h1 className="text-4xl font-bold text-gray-900">AI Audio Transcriber</h1>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <Header />
+      <Home />
+      <Footer />
     </div>
   )
 }
