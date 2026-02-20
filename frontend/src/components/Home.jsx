@@ -3,14 +3,57 @@ import { FileAudio, Upload, Download } from 'lucide-react';
 import axios from 'axios';
 
 export default function Home() {
+  // State management
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [transcript, setTranscript] = useState('');
+  const [error, setError] = useState('');
 
+  // Handle file selection and validation
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      // Validate file type by MIME type
+      const validTypes = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/mp4', 'audio/x-m4a', 'audio/m4a'];
+      
+      // Fallback: If MIME type is empty, validate by file extension
+      if (!selectedFile.type) {
+        const extension = selectedFile.name.split('.').pop().toLowerCase();
+        if (['mp3', 'wav', 'mp4', 'm4a'].includes(extension)) {
+          setFile(selectedFile);
+          setError('');
+          return;
+        }
+      }
+      
+      // Check if file type is valid
+      if (!validTypes.includes(selectedFile.type)) {
+        setError('Invalid file type. Please upload mp3, wav, mp4, or m4a files.');
+        setFile(null);
+        return;
+      }
+
+      // Validate file size (max 200MB)
+      const maxSize = 200 * 1024 * 1024;
+      if (selectedFile.size > maxSize) {
+        setError('File too large. Maximum size is 200MB.');
+        setFile(null);
+        return;
+      }
+
+      // File is valid
+      setFile(selectedFile);
+      setError('');
+    }
+  };
+
+  // Upload file and get transcription
   const handleUpload = async () => {
     if (!file) return;
 
     setLoading(true);
+    setTranscript('');
+    setError('');
 
     const formData = new FormData();
     formData.append('audio', file);
@@ -19,18 +62,21 @@ export default function Home() {
       const response = await axios.post('http://localhost:7071/api/transcribe', formData);
       setTranscript(response.data.transcription || 'Transcription completed');
     } catch (err) {
-      console.error('Upload failed:', err);
+      setError(err.response?.data?.error || 'Transcription failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  // Clear all data and reset form
   const handleClear = () => {
     setFile(null);
     setTranscript('');
+    setError('');
     document.querySelector('input[type="file"]').value = '';
   };
 
+  // Download transcript as text file
   const handleDownload = () => {
     const blob = new Blob([transcript], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -52,8 +98,8 @@ export default function Home() {
         <div className="flex gap-4 mb-4">
           <input
             type="file"
-            accept=""
-            onChange={(e) => setFile(e.target.files[0])}
+            //accept=".mp3,.wav,.mp4,.m4a"
+            onChange={handleFileChange}
             className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-black file:text-white hover:file:bg-gray-800 file:cursor-pointer"
           />
           <button 
@@ -76,9 +122,11 @@ export default function Home() {
         <p className="text-xs text-gray-500 mb-6">Supports mp3, wav, mp4, and m4a files up to 200MB</p>
       </div>
 
-      <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg max-w-3xl mx-auto">
-        <p className="text-red-600 text-sm">Error message here</p>
-      </div>
+      {error && (
+        <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg max-w-3xl mx-auto">
+          <p className="text-red-600 text-sm">{error}</p>
+        </div>
+      )}
 
       {transcript && (
         <div className="mt-6 bg-white rounded-lg shadow-lg p-6 sm:p-8 max-w-3xl mx-auto">

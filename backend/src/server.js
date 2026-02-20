@@ -6,17 +6,22 @@ import { initTranscriber, transcribeAudio } from './transcribe.js';
 const app = express();
 const PORT = 7071;
 
+// Configure multer for file uploads
 const upload = multer({ dest: 'uploads/' });
 
+// Initialize transcription model on startup
 initTranscriber();
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
+// Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
+// Transcription endpoint
 app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
@@ -34,6 +39,7 @@ app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
   }
 });
 
+// Start server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
