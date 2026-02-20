@@ -21,11 +21,17 @@ async function getTranscriber() {
 // Convert audio to Float32Array format using ffmpeg
 async function processAudio(filePath) {
   const outputPath = filePath + '.wav';
-  // Convert to 16kHz mono PCM float32 format
-  await execPromise(`ffmpeg -i "${filePath}" -ar 16000 -ac 1 -f f32le -acodec pcm_f32le "${outputPath}"`);
-  const audioData = new Float32Array(fs.readFileSync(outputPath).buffer);
-  fs.unlinkSync(outputPath); // Clean up temporary wav file
-  return audioData;
+  try {
+    // Convert to 16kHz mono PCM float32 format
+    await execPromise(`ffmpeg -i "${filePath}" -ar 16000 -ac 1 -f f32le -acodec pcm_f32le "${outputPath}"`);
+    const audioData = new Float32Array(fs.readFileSync(outputPath).buffer);
+    return audioData;
+  } finally {
+    // Always clean up temporary wav file
+    if (fs.existsSync(outputPath)) {
+      fs.unlinkSync(outputPath);
+    }
+  }
 }
 
 // Initialize transcriber on server startup

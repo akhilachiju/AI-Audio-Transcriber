@@ -13,6 +13,10 @@ export default function Home() {
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
+      // Clear previous transcript and error when new file is selected
+      setTranscript('');
+      setError('');
+      
       // Validate file type by MIME type
       const validTypes = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/mp4', 'audio/x-m4a', 'audio/m4a'];
       
@@ -98,7 +102,7 @@ export default function Home() {
         <div className="flex gap-4 mb-4">
           <input
             type="file"
-            //accept=".mp3,.wav,.mp4,.m4a"
+            accept=".mp3,.wav,.mp4,.m4a"
             onChange={handleFileChange}
             className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-black file:text-white hover:file:bg-gray-800 file:cursor-pointer"
           />

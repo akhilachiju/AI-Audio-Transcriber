@@ -1,0 +1,20 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "7071:7071"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/uploads:/app/uploads
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "7070:7070"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/index.html:/app/index.html

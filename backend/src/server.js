@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import multer from 'multer';
+import fs from 'fs';
 import { initTranscriber, transcribeAudio } from './transcribe.js';
 
 const app = express();
@@ -35,6 +36,10 @@ app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
     });
   } catch (error) {
     console.error('Transcription error:', error);
+    // Clean up file on error
+    if (req.file?.path && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
     res.status(500).json({ error: 'Transcription failed' });
   }
 });
